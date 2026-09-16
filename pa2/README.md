@@ -50,85 +50,92 @@ automatically and every node prints `leader is <id>`.
 
 
 ### Local test (one machine, three nodes)
-Give each node its own folder so it has its own `config.txt` and `log.txt`.
-Ring: `5001 -> 5002 -> 5003 -> 5001`.
-
+Give each node its own folder (and ideally its own terminal, so you can press
+Enter in each). Ring: `5001 -> 5002 -> 5003 -> 5001`.
+ 
 ```bash
 mkdir -p n1 n2 n3
-printf "127.0.0.1,5001\n127.0.0.1,5002\n" > n1/config.txt   
-printf "127.0.0.1,5002\n127.0.0.1,5003\n" > n2/config.txt   
-printf "127.0.0.1,5003\n127.0.0.1,5001\n" > n3/config.txt   
+printf "127.0.0.1,5001\n127.0.0.1,5002\n" > n1/config.txt   # node 1 -> node 2
+printf "127.0.0.1,5002\n127.0.0.1,5003\n" > n2/config.txt   # node 2 -> node 3
+printf "127.0.0.1,5003\n127.0.0.1,5001\n" > n3/config.txt   # node 3 -> node 1
 cp myprocess.py n1/ && cp myprocess.py n2/ && cp myprocess.py n3/
-# IN SEPARATE TABS:
-cd n1 && python3 myprocess.py
-cd n2 && python3 myprocess.py
-cd n3 && python3 myprocess.py
 ```
-
+ 
+Then, in three separate terminals:
+ 
+```bash
+cd n1 && python3 myprocess.py      # terminal 1
+cd n2 && python3 myprocess.py      # terminal 2
+cd n3 && python3 myprocess.py      # terminal 3
+```
+ 
+When all three show `press Enter when everyone is ready.`, press Enter in each.
 Each node's output goes to its terminal (and to its own `log.txt`).
-
+ 
 ---
-
+ 
 ## Execution example
-
-Real output from a three-node local run. The three random IDs this run were:
-
+ 
+A three-node run on one machine (three terminals, ports
+5001–5003). Each node printed `press Enter when everyone is ready.`; once all
+three were up, Enter was pressed in each. The three random IDs this run were:
+ 
 | Node | Port map        | UUID                                   |
 |------|-----------------|----------------------------------------|
-| 1    | 5001 → 5002     | `e53087f6-e841-4016-91c0-4ca656ccef56` |
-| 2    | 5002 → 5003     | `c5996714-9644-4e20-9d79-90b53548c1ab` |
-| 3    | 5003 → 5001     | `566c4872-1671-4599-b7ca-043e6806c728` |
-
-Node 1 holds the largest UUID, so it becomes the leader.
-
-### Node 1 (own 5001 → peer 5002) — the winner
+| 1    | 5001 → 5002     | `005ed8a0-f1db-4913-9765-57852757de37` |
+| 2    | 5002 → 5003     | `13e63818-457e-4c41-99e0-ce156199f67a` |
+| 3    | 5003 → 5001     | `77f695c4-b3bc-47b5-963d-3f31b55c64cf` |
+ 
+Node 3 holds the largest UUID, so it becomes the leader.
+ 
+### Node 1 (own 5001 → peer 5002)
 ```
-ID e53087f6-e841-4016-91c0-4ca656ccef56
+ID 005ed8a0-f1db-4913-9765-57852757de37
 [Server] listening on port 5001
-[Server] connection from ('127.0.0.1', 49192)
+press Enter when everyone is ready.
+[Server] connection from ('127.0.0.1', 61383)
+Received: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=0, greater, 0
 [Client] connected to 127.0.0.1:5002
-Received: uuid=566c4872-1671-4599-b7ca-043e6806c728, flag=0, less, 0
-Sent: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=0
-Received: uuid=c5996714-9644-4e20-9d79-90b53548c1ab, flag=0, less, 0
-Received: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=0, same, 0
-Leader is decided to e53087f6-e841-4016-91c0-4ca656ccef56.
-leader is e53087f6-e841-4016-91c0-4ca656ccef56
-Sent: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=1
-Received: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=1, same, 1, leader=e53087f6-e841-4016-91c0-4ca656ccef56
+Sent: uuid=005ed8a0-f1db-4913-9765-57852757de37, flag=0
+Sent: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=0
+Received: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=1, greater, 0
+leader is 77f695c4-b3bc-47b5-963d-3f31b55c64cf
+Sent: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=1
 ```
-
+ 
 ### Node 2 (own 5002 → peer 5003)
 ```
-ID c5996714-9644-4e20-9d79-90b53548c1ab
+ID 13e63818-457e-4c41-99e0-ce156199f67a
 [Server] listening on port 5002
-[Server] connection from ('127.0.0.1', 45276)
-Received: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=0, greater, 0
+press Enter when everyone is ready.
 [Client] connected to 127.0.0.1:5003
-Sent: uuid=c5996714-9644-4e20-9d79-90b53548c1ab, flag=0
-Sent: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=0
-Received: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=1, greater, 0
-leader is e53087f6-e841-4016-91c0-4ca656ccef56
-Sent: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=1
+Sent: uuid=13e63818-457e-4c41-99e0-ce156199f67a, flag=0
+[Server] connection from ('127.0.0.1', 61387)
+Received: uuid=005ed8a0-f1db-4913-9765-57852757de37, flag=0, less, 0
+Received: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=0, greater, 0
+Sent: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=0
+Received: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=1, greater, 0
+leader is 77f695c4-b3bc-47b5-963d-3f31b55c64cf
+Sent: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=1
 ```
-
-### Node 3 (own 5003 → peer 5001)
+ 
+### Node 3 (own 5003 → peer 5001) — the winner
 ```
-ID 566c4872-1671-4599-b7ca-043e6806c728
+ID 77f695c4-b3bc-47b5-963d-3f31b55c64cf
 [Server] listening on port 5003
+press Enter when everyone is ready.
 [Client] connected to 127.0.0.1:5001
-Sent: uuid=566c4872-1671-4599-b7ca-043e6806c728, flag=0
-[Server] connection from ('127.0.0.1', 57222)
-Received: uuid=c5996714-9644-4e20-9d79-90b53548c1ab, flag=0, greater, 0
-Sent: uuid=c5996714-9644-4e20-9d79-90b53548c1ab, flag=0
-Received: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=0, greater, 0
-Sent: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=0
-Received: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=1, greater, 0
-leader is e53087f6-e841-4016-91c0-4ca656ccef56
-Sent: uuid=e53087f6-e841-4016-91c0-4ca656ccef56, flag=1
+Sent: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=0
+[Server] connection from ('127.0.0.1', 61386)
+Received: uuid=13e63818-457e-4c41-99e0-ce156199f67a, flag=0, less, 0
+Received: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=0, same, 0
+Leader is decided to 77f695c4-b3bc-47b5-963d-3f31b55c64cf.
+Sent: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=1
+Received: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=1, same, 1
+leader is 77f695c4-b3bc-47b5-963d-3f31b55c64cf
 ```
-
+ 
 All three nodes finish with the same `leader_id`
-(`e53087f6-e841-4016-91c0-4ca656ccef56`) and stop sending
-
+(`77f695c4-b3bc-47b5-963d-3f31b55c64cf`) and stop 
 ---
 
