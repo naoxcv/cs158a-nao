@@ -1,0 +1,14 @@
+ID 6f657e19-3e3b-4024-a7f0-8715b0b31db8
+[Server] listening on port 5002
+ID 7901d600-f1f9-4232-927f-c9881e17233d
+[Server] listening on port 5002
+ID 13e63818-457e-4c41-99e0-ce156199f67a
+[Server] listening on port 5002
+[Client] connected to 127.0.0.1:5003
+Sent: uuid=13e63818-457e-4c41-99e0-ce156199f67a, flag=0
+[Server] connection from ('127.0.0.1', 61387)
+Received: uuid=005ed8a0-f1db-4913-9765-57852757de37, flag=0, less, 0
+Received: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=0, greater, 0
+Sent: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=0
+Received: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=1, greater, 0
+Sent: uuid=77f695c4-b3bc-47b5-963d-3f31b55c64cf, flag=1
